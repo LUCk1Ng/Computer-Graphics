@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute vec4 vPosition;
+attribute vec4 vNormal;
+
+uniform mat4 mView;
+uniform mat4 mProj;
+
+uniform vec4 lightPosition;
+
+varying vec4 fColor;
+
+void
+main()
+{
+    vec3 vertexPos = vPosition.xyz;
+    vec3 lightPos = lightPosition.xyz;
+    vec3 lightVector = normalize(lightPos - vertexPos);
+    vec3 normalVector = normalize(vNormal.xyz);
+
+    // the magic line!
+    float diffuseValue = dot(lightVector, normalVector)/pow(length(lightPos - vertexPos),2.0);
+    
+    fColor = vec4(diffuseValue, 0, diffuseValue, 1);;
+    gl_Position = mProj * mView * vPosition;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 fColor;
+
+void
+main()
+{
+
+    gl_FragColor = fColor;
+
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="minimalShading.js"></script>
+
+<body>
+<canvas id="gl-canvas" width="512" height="512">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+<br/>
+Eye
+X<input id="EyeX" type="range" min="-10" max="10" step="0.01" oninput="updateView();">
+
+Y<input id="EyeY" type="range" min="-10" max="10" step="0.01" oninput="updateView();">
+
+Z<input id="EyeZ" type="range" min="-10" max="10" step="0.01" oninput="updateView();">
+<br/>
+At
+X<input id="AtX" type="range" min="-5" max="5" step="0.01" oninput="updateView();">
+
+Y<input id="AtY" type="range" min="-5" max="5" step="0.01" oninput="updateView();">
+
+Z<input id="AtZ" type="range" min="-5" max="5" step="0.01" oninput="updateView();">
+
+<br/>
+Aspect Ratio <input id="AR" type="range" min="0" max="200" step="0.01" oninput="updateView();">
+<br/>
+Light Position
+X<input id="LpX" type="range" min="-5" max="5" step="0.01" oninput="updateLightPosition();">
+
+Y<input id="LpY" type="range" min="-5" max="5" step="0.01" oninput="updateLightPosition();">
+
+Z<input id="LpZ" type="range" min="-5" max="5" step="0.01" oninput="updateLightPosition();">
+
+<br/>
+</body>
+</html>
